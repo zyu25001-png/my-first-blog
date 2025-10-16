@@ -1,18 +1,44 @@
-# Create your views here.
-from django.shortcuts import render, get_object_or_404
-from .models import Post  # Postモデルをインポート
-from django.utils import timezone  # 時刻操作用
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from .forms import PostForm
+from .models import Post
 
-# ブログ記事一覧ページ
 def post_list(request):
-    # 公開日が現在時刻以下の記事を取得して日付順に並べる
-    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-    # post_list.html テンプレートに posts を渡してレンダリング
+    posts = Post.objects.filter(published_date__isnull=False).order_by('-published_date')
     return render(request, 'blog/post_list.html', {'posts': posts})
 
-# ブログ記事詳細ページ
 def post_detail(request, pk):
-    # プライマリキー(pk)に一致する記事を取得。存在しない場合は404ページ
     post = get_object_or_404(Post, pk=pk)
-    # post_detail.html テンプレートに post を渡してレンダリング
     return render(request, 'blog/post_detail.html', {'post': post})
+
+@login_required
+def post_new(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            return redirect('blog:post_detail', pk=post.pk)
+    else:
+        form = PostForm()
+    return render(request, 'blog/post_edit.html', {'form': form})
+
+@login_required
+def post_edit(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            # 只有在新建文章时才设置发布时间
+            if not post.published_date:
+                post.published_date = timezone.now()
+            post.save()
+            return redirect('blog:post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'blog/post_edit.html', {'form': form})
