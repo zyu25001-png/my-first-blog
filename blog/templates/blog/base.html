@@ -1,8 +1,9 @@
-{% load static %}
-<html>
+<html lang="ja">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
     <title>Django Girls blog</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
@@ -14,7 +15,8 @@
 <body>
     <div class="page-header">
         {% if user.is_authenticated %}
-        <a href="{% url 'blog:post_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+        <a href="{% url 'blog:post_new' %}" class="top-menu" title="新しい記事を追加"><span
+                class="glyphicon glyphicon-plus"></span></a>
         {% endif %}
         <h1><a href="/">Django Girls Blog</a></h1>
     </div>
