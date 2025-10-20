@@ -8,4 +8,11 @@ urlpatterns = [
     path('post/<int:pk>/', views.post_detail, name='post_detail'),  # 博文详情页
     path('post/new/', views.post_new, name='post_new'),  # 新建博文
     path('post/<int:pk>/edit/', views.post_edit, name='post_edit'),  # 编辑博文
+    path('drafts/', views.post_draft_list, name='post_draft_list'),  # 草稿一覧
+    path('post/<int:pk>/publish/', views.post_publish, name='post_publish'),  # 記事掲載
+    path('post/<int:pk>/remove/', views.post_remove, name='post_remove'),  # 記事削除
+    # コメント関連のURLパターン
+    path('post/<int:pk>/comment/', views.add_comment_to_post, name='add_comment_to_post'),  # コメント追加
+    path('comment/<int:pk>/approve/', views.comment_approve, name='comment_approve'),  # コメント承認
+    path('comment/<int:pk>/remove/', views.comment_remove, name='comment_remove'),  # コメント削除
 ]

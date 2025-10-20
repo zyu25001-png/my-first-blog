@@ -12,6 +12,8 @@
     <!-- 記事タイトルをクリックすると詳細ページへ -->
     <h2><a href="{% url 'blog:post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
     <p>{{ post.text|linebreaksbr }}</p>
+    <!-- 承認済みコメント数を表示 -->
+    <a href="{% url 'blog:post_detail' pk=post.pk %}">コメント数: {{ post.approved_comments.count }}</a>
 </div>
 {% endfor %}
 {% else %}

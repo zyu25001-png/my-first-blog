@@ -6,12 +6,46 @@
     <div class="date">
         {{ post.published_date }}
     </div>
+    {% else %}
+    <form method="POST" action="{% url 'blog:post_publish' pk=post.pk %}" class="post-form">{% csrf_token %}
+        <button type="submit" class="post btn btn-secondary" name="publish">Publish</button>
+    </form>
     {% endif %}
+    <h1 style="display: inline-block;">{{ post.title }}</h1>
     {% if user.is_authenticated %}
-    <a class="btn btn-default" href="{% url 'blog:post_edit' pk=post.pk %}"><span
-            class="glyphicon glyphicon-pencil"></span></a>
+    <a class="btn btn-default" href="{% url 'blog:post_edit' pk=post.pk %}" title="記事を編集"
+        style="margin-left: 10px;"><span class="glyphicon glyphicon-pencil"></span></a>
+    <form method="POST" action="{% url 'blog:post_remove' pk=post.pk %}" class="post-form"
+        style="display: inline; margin-left: 5px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-default" name="delete" title="記事を削除"><span
+                class="glyphicon glyphicon-remove"></span></button>
+    </form>
     {% endif %}
-    <h1>{{ post.title }}</h1>
     <p>{{ post.text|linebreaksbr }}</p>
 </div>
+
+<!-- コメント追加ボタン -->
+<a class="btn btn-default" href="{% url 'blog:add_comment_to_post' pk=post.pk %}">コメントを追加</a>
+
+<!-- コメント表示セクション -->
+<hr>
+<h3>コメント</h3>
+{% for comment in post.comments.all %}
+{% if user.is_authenticated or comment.approved_comment %}
+<div class="comment">
+    <div class="date">
+        {{ comment.created_date }}
+        {% if not comment.approved_comment %}
+        <a class="btn btn-default" href="{% url 'blog:comment_remove' pk=comment.pk %}">削除</a>
+        <a class="btn btn-default" href="{% url 'blog:comment_approve' pk=comment.pk %}">承認</a>
+        {% endif %}
+    </div>
+    <strong>{{ comment.author }}</strong>
+    <p>{{ comment.text|linebreaks }}</p>
+</div>
+{% endif %}
+{% empty %}
+<p>まだコメントがありません :(</p>
+{% endfor %}
 {% endblock %}
